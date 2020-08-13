@@ -1,23 +1,33 @@
+/* eslint-disable quotes */
 const store = {
   items: [
-    { id: cuid(), name: 'apples', checked: false },
-    { id: cuid(), name: 'oranges', checked: false },
-    { id: cuid(), name: 'milk', checked: true },
-    { id: cuid(), name: 'bread', checked: false }
+    { id: cuid(), name: 'apples', checked: false, edit: false },
+    { id: cuid(), name: 'oranges', checked: false, edit: false },
+    { id: cuid(), name: 'milk', checked: true, edit: false },
+    { id: cuid(), name: 'bread', checked: false, edit: false }
   ],
-  hideCheckedItems: false
+  hideCheckedItems: false,
+  edittingAnItem: false,
+  //currentItemEditID:""
 };
-
 const generateItemElement = function (item) {
   let itemTitle = `<span class='shopping-item shopping-item__checked'>${item.name}</span>`;
+  let editButton = `<button class='js-item-edit'><span class='button-label'>edit item</span></button>`;
   if (!item.checked) {
     itemTitle = `
      <span class='shopping-item'>${item.name}</span>
     `;
   }
+  /** 
+   * If edit is true, render the item differently...
+   */
+  if(item.edit){
+    itemTitle = `<input class="edit-field" type="text" placeholder="${item.name}"></input>`;
+    editButton = `<button class='js-item-edit'><span class='button-label'>Done?</span></button>`;
+  } 
 
   return `
-    <li class='js-item-element' data-item-id='${item.id}'>
+    <li class='js-item-element' data-item-id='${item.id}' data-name='${item.name}'>
       ${itemTitle}
       <div class='shopping-item-controls'>
         <button class='shopping-item-toggle js-item-toggle'>
@@ -26,6 +36,7 @@ const generateItemElement = function (item) {
         <button class='shopping-item-delete js-item-delete'>
           <span class='button-label'>delete</span>
         </button>
+        ${editButton}
       </div>
     </li>`;
 };
@@ -94,6 +105,11 @@ const getItemIdFromElement = function (item) {
     .closest('.js-item-element')
     .data('item-id');
 };
+const getNameFromElement = function (item) {
+  return $(item)
+    .closest('.js-item-element')
+    .data('name');
+};
 
 /**
  * Responsible for deleting a list item.
@@ -126,6 +142,49 @@ const handleDeleteItemClicked = function () {
     render();
   });
 };
+
+const getNewTitle = function(id){
+  //Grabs the item we need to change the title of.
+  const item = store.items.find(item => id === item.id );
+  let newTitle = $(`li[data-item-id="${id}"] input`).val();
+  //If the value entered isn't blank
+  //Set the new title
+  if (newTitle !== ""){
+    //console.log(`Setting the new title. \n ${item.name} to ${newTitle}`);
+    item.name = newTitle;
+  }
+
+};
+
+/**
+ * Toggles the value of that item to see if we want to edit it or not
+ */
+const editItemTitleToggle = function(id){
+  const foundItem = store.items.find(item => item.id === id);
+  // Once edit is true the conditional will run,
+  // Since edit is intially false it won't run.
+  if(foundItem.edit){
+    getNewTitle(id);
+  }
+  foundItem.edit = !foundItem.edit;
+  // This changes the value ands says hey we're editing something...
+  store.edittingAnItem = !store.edittingAnItem;
+  //console.log(`Hey we're editting something! ${store.edittingAnItem}`);
+};
+
+/**
+ * If you user wants to edit something
+ * Edit that item
+ */
+const handleEditItem = function () {
+  $('.js-shopping-list').on('click', '.js-item-edit', event => {
+    const id = getItemIdFromElement(event.currentTarget);
+    //This says to turn on the edit field
+    editItemTitleToggle(id);
+    render();
+  }); 
+};
+
 
 /**
  * Toggles the store.hideCheckedItems property
@@ -160,6 +219,7 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleEditItem();
 };
 
 // when the page loads, call `handleShoppingList`

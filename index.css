@@ -10,6 +10,7 @@ body {
 
 button, input[type="text"] {
   padding: 5px;
+  margin-left: 1px;
 }
 
 button:hover {
@@ -50,4 +51,10 @@ button:hover {
 
 .shopping-item__checked {
   text-decoration: line-through;
+}
+.hidden{
+  display: none;
+}
+.edit-field{
+  margin-bottom: 4px;
 }
