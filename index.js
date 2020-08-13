@@ -1,4 +1,4 @@
-/* eslint-disable quotes */
+/* eslint-disable quotes, no-undef */
 const store = {
   items: [
     { id: cuid(), name: 'apples', checked: false, edit: false },
@@ -104,11 +104,6 @@ const getItemIdFromElement = function (item) {
   return $(item)
     .closest('.js-item-element')
     .data('item-id');
-};
-const getNameFromElement = function (item) {
-  return $(item)
-    .closest('.js-item-element')
-    .data('name');
 };
 
 /**
