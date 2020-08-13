@@ -7,7 +7,7 @@ const store = {
     { id: cuid(), name: 'bread', checked: false, edit: false }
   ],
   hideCheckedItems: false,
-  edittingAnItem: false,
+  //edittingAnItem: false,
   //currentItemEditID:""
 };
 const generateItemElement = function (item) {
@@ -163,7 +163,7 @@ const editItemTitleToggle = function(id){
   }
   foundItem.edit = !foundItem.edit;
   // This changes the value ands says hey we're editing something...
-  store.edittingAnItem = !store.edittingAnItem;
+  //store.edittingAnItem = !store.edittingAnItem;
   //console.log(`Hey we're editting something! ${store.edittingAnItem}`);
 };
 
