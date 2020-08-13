@@ -1,15 +1,7 @@
 /* eslint-disable quotes, no-undef */
-const store = {
-  items: [
-    { id: cuid(), name: 'apples', checked: false, edit: false },
-    { id: cuid(), name: 'oranges', checked: false, edit: false },
-    { id: cuid(), name: 'milk', checked: true, edit: false },
-    { id: cuid(), name: 'bread', checked: false, edit: false }
-  ],
-  hideCheckedItems: false,
-  //edittingAnItem: false,
-  //currentItemEditID:""
-};
+import store from './store.js';
+import item from './item.js';
+
 const generateItemElement = function (item) {
   let itemTitle = `<span class='shopping-item shopping-item__checked'>${item.name}</span>`;
   let editButton = `<button class='js-item-edit'><span class='button-label'>edit item</span></button>`;
@@ -60,29 +52,38 @@ const render = function () {
   $('.js-shopping-list').html(shoppingListItemsString);
 };
 
-const addItemToShoppingList = function (itemName) {
-  store.items.push({ id: cuid(), name: itemName, checked: false });
-};
+// const addItemToShoppingList = function (itemName) {
+//   try{
+//     //console.log('In try for add Item');
+//     item.validateName(itemName); 
+//     store.items.push(item.create(itemName));
+//     render();
+//   } catch (error){
+//     console.log(`${error.message}`);
+//   }
+//   //store.items.push({ id: cuid(), name: itemName, checked: false });
+// };
 
 const handleNewItemSubmit = function () {
   $('#js-shopping-list-form').submit(function (event) {
     event.preventDefault();
     const newItemName = $('.js-shopping-list-entry').val();
     $('.js-shopping-list-entry').val('');
-    addItemToShoppingList(newItemName);
+    store.addItem(newItemName);
     render();
   });
 };
 
-const toggleCheckedForListItem = function (id) {
-  const foundItem = store.items.find(item => item.id === id);
-  foundItem.checked = !foundItem.checked;
-};
+// const toggleCheckedForListItem = function (id) {
+//   const foundItem = store.items.find(item => item.id === id);
+//   foundItem.checked = !foundItem.checked;
+// };
+
 
 const handleItemCheckClicked = function () {
   $('.js-shopping-list').on('click', '.js-item-toggle', event => {
     const id = getItemIdFromElement(event.currentTarget);
-    toggleCheckedForListItem(id);
+    store.findAndToggleChecked(id);
     render();
   });
 };
@@ -97,10 +98,11 @@ const getItemIdFromElement = function (item) {
  * Responsible for deleting a list item.
  * @param {string} id 
  */
-const deleteListItem = function (id) {
-  const index = store.items.findIndex(item => item.id === id);
-  store.items.splice(index, 1);
-};
+
+// const deleteListItem = function (id) {
+//   const index = store.items.findIndex(item => item.id === id);
+//   store.items.splice(index, 1);
+// };
 
 const handleDeleteItemClicked = function () {
   // like in `handleItemCheckClicked`, we use event delegation
@@ -108,8 +110,9 @@ const handleDeleteItemClicked = function () {
     // get the index of the item in store.items
     const id = getItemIdFromElement(event.currentTarget);
     // delete the item
-    deleteListItem(id);
+    store.findAndDelete(id);
     // render the updated shopping list
+    console.log(store.items);
     render();
   });
 };
@@ -160,9 +163,10 @@ const handleEditItem = function () {
 /**
  * Toggles the store.hideCheckedItems property
  */
-const toggleCheckedItemsFilter = function () {
-  store.hideCheckedItems = !store.hideCheckedItems;
-};
+
+// const toggleCheckedItemsFilter = function () {
+//   store.hideCheckedItems = !store.hideCheckedItems;
+// };
 
 /**
  * Places an event listener on the checkbox
@@ -170,7 +174,7 @@ const toggleCheckedItemsFilter = function () {
  */
 const handleToggleFilterClick = function () {
   $('.js-filter-checked').click(() => {
-    toggleCheckedItemsFilter();
+    store.toggleCheckedFilter();
     render();
   });
 };
@@ -180,7 +184,7 @@ const handleEditShoppingItemSubmit = function () {
     event.preventDefault();
     const id = getItemIdFromElement(event.currentTarget);
     const itemName = $(event.currentTarget).find('.shopping-item').val();
-    editListItemName(id, itemName);
+    store.findAndUpdateName(id, itemName);
     render();
   });
 };
@@ -199,3 +203,6 @@ export default {
   render,
   bindEventListeners
 };
+
+
+console.log(item);
